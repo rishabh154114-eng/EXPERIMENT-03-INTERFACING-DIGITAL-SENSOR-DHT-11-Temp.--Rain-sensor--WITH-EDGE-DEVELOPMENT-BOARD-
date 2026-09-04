@@ -2,10 +2,10 @@
 
 ---
 
-### **NAME:**  
-### **DEPARTMENT:**  
-### **ROLL NO:**  
-### **DATE OF EXPERIMENT:**  
+### **NAME:** T.Rishabh srivatsav
+### **DEPARTMENT:**  CSE(IOT)
+### **ROLL NO:**  212224113001
+### **DATE OF EXPERIMENT:**  05/08/2026
 
 ---
 
@@ -72,43 +72,196 @@ Experiment 3A
 ```
 
 
- 
+ import Adafruit_DHT
+import paho.mqtt.client as mqtt
+import ssl
+import time
 
+# ---------------- DHT11 Setup ----------------
 
+DHT_SENSOR = Adafruit_DHT.DHT11
+DHT_PIN = 18  # GPIO18
 
+# ---------------- HiveMQ Cloud Credentials ----------------
+
+MQTT_BROKER = "99abf9ad843d4d2c9de4899b56eb863a.s1.eu.hivemq.cloud"
+MQTT_PORT = 8883
+MQTT_USER = "hivemq.webclient.1785579047827"
+MQTT_PASSWORD = "u;2%rC70tVIM,n<1hfWT"
+
+TEMP_TOPIC = "raspberrypi/dht/temperature"
+HUM_TOPIC = "raspberrypi/dht/humidity"
+
+# ---------------- MQTT Client Setup ----------------
+
+client = mqtt.Client()
+client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
+
+client.tls_set(tls_version=ssl.PROTOCOL_TLS)
+
+client.connect(MQTT_BROKER, MQTT_PORT)
+
+print("Connected to HiveMQ Cloud")
+print("Reading DHT11 Sensor...\n")
+
+# ---------------- Main Loop ----------------
+
+while True:
+
+    humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
+
+    if humidity is not None and temperature is not None:
+
+        print(f"Temperature = {temperature} °C")
+        print(f"Humidity = {humidity} %")
+        print("---------------------------")
+
+        # Publish to HiveMQ
+        client.publish(TEMP_TOPIC, temperature)
+        client.publish(HUM_TOPIC, humidity)
+
+        print("Data sent to HiveMQ\n")
+
+    else:
+        print("Sensor failure. Check wiring.")
+
+    time.sleep(10)
  
 ````
 
 ### OUPUT  
-
-
 # FIGURE -04 ADD TITILE HERE 
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/a6e7e277-59a0-49d5-b51d-034f0f607fee" />
 
 #  FIGURE -05 ADD TITILE HERE 
+<img width="546" height="341" alt="image" src="https://github.com/user-attachments/assets/2647ac3b-0286-4e10-873f-555e46f7fb9c" />
 
 # FIGURE -06 ADD TITLE HERE 
+<img width="1862" height="917" alt="image" src="https://github.com/user-attachments/assets/5e3dc22a-d330-4b67-af12-a0b7ea7628c5" />
 
 Experiment 3B
 ## PROGRAM (Python)
 ```
+import time
+import ssl
+import json
+import RPi.GPIO as GPIO
+import paho.mqtt.client as mqtt
 
+# =====================================================
+# GPIO SETUP
+# =====================================================
 
- 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
+RAIN_SENSOR_PIN = 18
 
+GPIO.setup(RAIN_SENSOR_PIN, GPIO.IN)
 
+# =====================================================
+# MQTT SETUP
+# =====================================================
+
+MQTT_BROKER = "99abf9ad843d4d2c9de4899b56eb863a.s1.eu.hivemq.cloud"
+MQTT_PORT = 8883
+
+MQTT_USER = "hivemq.webclient. 1785581075112"
+MQTT_PASSWORD = ".WszV%830apZI@X?ye4G"
+
+MQTT_TOPIC = "raspberrypi/rain"
+
+client = mqtt.Client()
+
+client.username_pw_set(
+    MQTT_USER,
+    MQTT_PASSWORD
+)
+
+client.tls_set(
+    tls_version=ssl.PROTOCOL_TLS
+)
+
+# =====================================================
+# CONNECT TO HIVEMQ
+# =====================================================
+
+print("Connecting to HiveMQ Cloud...")
+
+client.connect(
+    MQTT_BROKER,
+    MQTT_PORT
+)
+
+client.loop_start()
+
+print("Connected Successfully")
+
+# =====================================================
+# MAIN LOOP
+# =====================================================
+
+try:
+
+    while True:
+
+        rain_value = GPIO.input(RAIN_SENSOR_PIN)
+
+        # ACTIVE LOW SENSOR
+        if rain_value == 0:
+
+            status = "RAIN DETECTED"
+            rain_status = 1
+
+        else:
+
+            status = "NO RAIN"
+            rain_status = 0
+
+        print(status)
+
+        payload = {
+            "rain_status": rain_status,
+            "message": status
+        }
+
+        client.publish(
+            MQTT_TOPIC,
+            json.dumps(payload)
+        )
+
+        print("Data Published")
+        print(payload)
+
+        time.sleep(5)
+
+except KeyboardInterrupt:
+
+    print("Program Stopped")
+
+finally:
+
+    GPIO.cleanup()
+
+    client.loop_stop()
+    client.disconnect()
+
+    print("GPIO Cleaned")
+    print("MQTT Disconnected")
  
 ````
 
 ### OUPUT  
 
 # FIGURE -07 ADD TITILE HERE 
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/ec403f50-6541-48b8-a14b-f7bcdf9f842c" />
 
 #  FIGURE -08 ADD TITILE HERE 
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/915f9ef3-12e7-4202-8257-38e4d5285b05" />
 
 # FIGURE -09 ADD TITLE HERE 
 
-
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/002998e6-f330-483a-8177-c9406c3144a8" />
 
 
 ## **RESULT:**  
