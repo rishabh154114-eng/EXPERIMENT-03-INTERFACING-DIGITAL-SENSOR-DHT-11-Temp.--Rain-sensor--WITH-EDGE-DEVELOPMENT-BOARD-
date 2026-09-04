@@ -261,7 +261,8 @@ finally:
 
 # FIGURE -09 ADD TITLE HERE 
 
-<img width="1897" height="1022" alt="Screenshot 2026-07-27 154633" src="https://github.com/user-attachments/assets/8bc45ab5-92e2-4829-88a9-884450e76348" />
+<img width="883" height="436" alt="Screenshot 2026-09-04 192955" src="https://github.com/user-attachments/assets/0cce8a8b-de19-4da8-a035-99f650d43aa9" />
+
 
 
 
